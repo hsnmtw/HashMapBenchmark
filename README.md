@@ -7,23 +7,30 @@ RunBenchMark("Naeive", new NaeiveImpl(),   1);
 ```
 
 Algorithm used:
-```
-    # locating a key
+```vb
+    
     function get_index(key) {
         n := items.count
         index := hash(key) MODULO n
 
         if item[index].key == NULL or item[index].key == key then
             return index
-        else
-            for i := 0 to n # number of items in the storage
-                if items[i].key == NULL or item[i].key == key then
-                    return i
-                end if
-            next
         end if
 
-        # the array is full and needs expansion
+        ' the key was not found using hashing function
+        ' and the spot in the array is not empty, look for next spot
+        ' if the spot at the hashed key (index) is not empty, then 
+        ' this means we have a collision
+
+        for i := 0 to n 
+            x := (index+i) MODULO n
+            if items[x].key == NULL or item[x].key == key then
+                return x
+            end if
+            collisions = collisions + 1
+        next
+
+        ' the array is full and needs expansion
 
         items = expand(n*2)
         return index
