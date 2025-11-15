@@ -1,11 +1,14 @@
+using System.Collections.Specialized;
+using System.Runtime.InteropServices;
+
 public sealed class NaeiveImpl : IHashMap
 {
-    private int pos;
-    private (string key, int value)[] entiries = new (string key, int value)[93];
+    private int _count;
+    private (string key, int value)[] entiries = new (string key, int value)[3793];
 
     public void Clear()
     {
-        entiries = new (string key, int value)[93];
+        entiries = new (string key, int value)[3793];
     }
 
     private long _misses;
@@ -16,7 +19,7 @@ public sealed class NaeiveImpl : IHashMap
 
     public int Count()
     {
-        return pos+1;
+        return _count+1;
     }
 
     public int Get(string key)
@@ -26,7 +29,7 @@ public sealed class NaeiveImpl : IHashMap
 
     public IEnumerable<(string key,int value)> Entries()
     {
-        return entiries[0..pos];
+        return entiries[0.._count];
     }
 
     public int Index(string key)
@@ -45,7 +48,7 @@ public sealed class NaeiveImpl : IHashMap
     //private readonly HashSet<string> _keys = [];
     public IEnumerable<string> Keys()
     {
-        return entiries[0..pos].Select(x=>x.key);
+        return entiries[0.._count].Select(x=>x.key);
     }
 
     public void Put(string key, int value)
@@ -53,39 +56,28 @@ public sealed class NaeiveImpl : IHashMap
         int n = entiries.Length;
         bool is_empty;
         
-        if (n > pos)
+        if (n > _count)
         {
             int index = Index(key);
-            is_empty = index>=pos && string.IsNullOrEmpty(entiries[index].key);
+            is_empty = index>=_count && string.IsNullOrEmpty(entiries[index].key);
             entiries[index] = (key,value);
             //_keys.Add(key);
-            if(is_empty) pos++;
+            if(is_empty) _count++;
             return;
         }
 
-        var table = new (string key, int value)[n*2];
-        for (int i = 0; i < n; i++)
-        {
-            table[i] = entiries[i];
-        }
-
-        is_empty = n>=pos && string.IsNullOrEmpty(table[n].key);
-
-        table[n] = (key,value);
-        entiries = table;
-        //_keys.Add(key);
-        if(is_empty) pos++;
-
+        Array.Resize(ref entiries, n*2);
+        entiries[n] = (key,value);
+        _count++;
     }
 
     public void Increment(string key)
     {
-        if (pos >= entiries.Length) Put(key,0);
+        if (_count >= entiries.Length) Put(key,0);
         int index = Index(key);
-        bool is_empty = index >= pos && string.IsNullOrEmpty(entiries[index].key);
+        bool is_empty = index >= _count && string.IsNullOrEmpty(entiries[index].key);
         entiries[index].key    = key;
         entiries[index].value += 1;
-        //_keys.Add(key);
-        if(is_empty) pos++;
+        if(is_empty) _count++;
     }
 }
