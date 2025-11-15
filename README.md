@@ -50,7 +50,8 @@ Algorithm used:
 
 *the following is the test results:*
 ```shell
-D:\coding\hash_map>dotnet run --release
+$ dotnet run --release
+
 Hash Map [Native] with # of iterations = 5
 ----------------------------------------------------------------------------------------
 Name                                Words            Most Misses  Elapsed min/avg/max (ms)
@@ -60,6 +61,7 @@ black-peter.txt           48KB     2,628   the    2510        0      20      23 
 houn.txt                 346KB    10,268   the   17850        0     162     182     241
 t8.shakespeare.txt     5,458KB    72,105   the  134060        0   2,409   2,589   3,151
 ----------------------------------------------------------------------------------------
+
 Hash Map [OurMap] with # of iterations = 5
 ----------------------------------------------------------------------------------------
 Name                                Words            Most Misses  Elapsed min/avg/max (ms)
@@ -70,6 +72,15 @@ houn.txt                 346KB    10,268   the   17850     6251     239     248 
 t8.shakespeare.txt     5,458KB    72,105   the  134060   292499   3,872   3,954   4,039
 ----------------------------------------------------------------------------------------
 
+Hash Map [Naeive] with # of iterations = 5
+----------------------------------------------------------------------------------------
+Name                                Words            Most Misses  Elapsed min/avg/max (ms)
+----------------------------------------------------------------------------------------
+AbigailsTale.txt           4KB       307    to     185      215505       3       4       4
+black-peter.txt           48KB     2,628   the    2510    16692786     117     128     132
+houn.txt                 346KB    10,268   the   17850   337530943   2,032   2,068   2,125
+t8.shakespeare.txt     5,458KB    72,105   the  134060 27729663838 182,662 193,562 208,987
+----------------------------------------------------------------------------------------
 
 ```
 
@@ -86,7 +97,7 @@ very well.
         {
             byte c = (byte)key[i];
             int p = primes[i%primes.Length];
-            sum =  (sum*p ^ c*(l-i+1)) << 5;
+            sum =  (sum*p ^ c*(l-i)) << 3;
         }
         int hash = (int)sum;
         return hash < 0 ? -hash : hash;

@@ -70,10 +70,19 @@ public sealed class NaeiveImpl : IHashMap
             return;
         }
 
-        Array.Resize(ref entiries, n*2);
+        ArrayResize();//ref entiries, n*2);
         entiries[n] = new(key,value);
         _count++;
 
+    }
+
+    private void ArrayResize()
+    {
+        int n = entiries.Length;
+        // Array.Resize(ref entiries, n*2);
+        Entry[] table = new Entry[n*2];
+        for(int i=0;i<n;++i) table[i]=entiries[i];
+        entiries = table;
     }
 
     public void Increment(string key)
@@ -81,7 +90,7 @@ public sealed class NaeiveImpl : IHashMap
         if (string.IsNullOrEmpty(key)) return;
         int n = entiries.Length;
         if (_count >= n) {
-            Array.Resize(ref entiries, n*2);
+            ArrayResize();//ref entiries, n*2);
         }
         int index = Index(key);
         bool is_empty = string.IsNullOrEmpty(entiries[index].key);

@@ -16,8 +16,7 @@ public sealed class MyHashMap : IHashMap
         {
             byte c = (byte)key[i];
             int p = primes[i%primes.Length];
-            sum =  (sum*p ^ c*(l-i+1)) << 5;
-            // sum += c*p*(l-i+1) << 5;
+            sum =  ((sum*p ^ c*(l-i+1)) << 3) + c*p;
         }
         int hash = (int)sum;
         return hash < 0 ? -hash : hash;
@@ -98,7 +97,7 @@ public sealed class MyHashMap : IHashMap
     {
         int n = entiries.Length;
         int index = Hash(key) % n;
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i+=1)
         {
             int x = (i+index)%n;
             var k = entiries[x].key;

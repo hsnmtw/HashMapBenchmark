@@ -27,8 +27,10 @@ static long Benchmark(string file, IHashMap map, int iteration, int iterations)
     while( (r = fs.Read(chars,0,length)) > 0)
     {
         sofar += r;
-        Console.CursorTop = top;
-        Console.CursorLeft = 0;
+        try{
+            Console.CursorTop = top;
+            Console.CursorLeft = 0;
+        } catch {}
         System.Console.Write("[{0}/{1}] [{2}]: {3:P2}", iteration, iterations, file, sofar/size);
         for(int i = 0; i < r; ++i)
         {
@@ -98,9 +100,9 @@ void RunBenchMark(string name, IHashMap map, int iterations)
     System.Console.WriteLine("----------------------------------------------------------------------------------------");
 }
 
-RunBenchMark("Native", new DotNetNative(), 5);
-RunBenchMark("OurMap", new MyHashMap(),    5);
-RunBenchMark("Naeive", new NaeiveImpl(),   5);
+RunBenchMark("Native", new DotNetNative(), 3);
+RunBenchMark("OurMap", new MyHashMap(),    3);
+RunBenchMark("Naeive", new NaeiveImpl(),   3);
 
 
 /*
