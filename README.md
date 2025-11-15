@@ -1,9 +1,9 @@
 # HashMapBenchmark
 
-```[c#]
-RunBenchMark("Naeive", new NaeiveImpl(),   1);
+```c#
 RunBenchMark("Native", new DotNetNative(), 1);
 RunBenchMark("OurMap", new MyHashMap(),    1);
+RunBenchMark("Naeive", new NaeiveImpl(),   1);
 ```
 
 *the following is the test results:*
@@ -41,7 +41,7 @@ t8.shakespeare.txt     5,458KB   969,450   the   26812 9171151790 152,264 152,26
 The hash function used is not proven to give a unique result for any key, yet, it performed
 very well.
 
-```[c#]
+```c#
     private static readonly int[] primes = [3,5,7,11,13,19,23,29]; 
     private int Hash(string key)
     {
