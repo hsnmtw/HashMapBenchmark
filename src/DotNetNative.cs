@@ -9,7 +9,7 @@ public sealed class DotNetNative : IHashMap
         dictionary.Clear();
     }
 
-    public int Collisions()
+    public long Misses()
     {
         return 0;
     }
@@ -24,20 +24,14 @@ public sealed class DotNetNative : IHashMap
         return dictionary.TryGetValue(key, out var value) ? value : 0;
     }
 
-    public int Get(int index)
+    public IEnumerable<(string key,int value)> Entries()
     {
-        return 0;
+        return dictionary.Select(x=>(x.Key,x.Value));
     }
 
-    public void Increment(string key)
+    public IEnumerable<string> Keys()
     {
-        if (!dictionary.ContainsKey(key)) dictionary[key] = 0;
-        dictionary[key]++;
-    }
-
-    public string[] Keys()
-    {
-        return [.. dictionary.Keys];
+        return dictionary.Keys;
     }
 
     public void Put(string key, int value)
@@ -45,8 +39,9 @@ public sealed class DotNetNative : IHashMap
         dictionary[key] = value;
     }
 
-    public void Put(int index, string key, int value)
+    public void Increment(string key)
     {
-        Put(key,value);
+        if (!dictionary.ContainsKey(key)) dictionary[key] = 0;
+        dictionary[key] += 1;
     }
 }

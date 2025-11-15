@@ -1,27 +1,22 @@
 
 public sealed class MyHashMap : IHashMap
 {
-    private (string key, int value)[] entiries = new (string key, int value)[104197];
+    private (string key, int value)[] entiries = new (string key, int value)[1041973];
+
+    private readonly HashSet<string> _keys = [];
+
+    private long _misses;
 
     private static readonly int[] primes = [3,5,7,11,13,19,23,29]; 
-    private HashSet<string> _keys = [];
-
-    private int _collisions;
-
     private int Hash(string key)
     {
-        //Crc32 crcCalculator = new Crc32();
-        
-        // return (int)Math.Abs(Crc16CcittKermit.ComputeChecksum(Encoding.UTF8.GetBytes(key)));
-
-        // ------------------
         int l = key.Length;
-        long sum = l*(long)primes.Select((x,i)=>Math.Pow(x,i+1)).Sum();
+        long sum = (long)Math.Pow(l,l); 
         for (int i = 0; i < key.Length; i++)
         {
-            int c = key[i];
+            byte c = (byte)key[i];
             int p = primes[i%primes.Length];
-            sum =  (sum*p ^ c*(l-i+1)) << 3;
+            sum =  (sum*p ^ c*(l-i+1)) << 5;
         }
         int hash = (int)sum;
         return hash < 0 ? -hash : hash;
@@ -35,25 +30,17 @@ public sealed class MyHashMap : IHashMap
 
     public int Count()
     {
-        return Keys().Length;
+        return Keys().Count();
     }
 
     public int Get(string key)
     {
-        int n = entiries.Length;
-        int index = Hash(key) % n;
-        for (int i = 0; i < n; i++)
-        {
-            int idx = (index+i) % n;
-            var (k,v) = entiries[idx];
-            if (string.IsNullOrEmpty(k) || Equals(k,key)) return v;
-        }
-        return 0;
+        return entiries[Index(key)].value;
     }
 
-    public string[] Keys()
+    public IEnumerable<string> Keys()
     {
-        return [.. _keys];//entiries.Where(x => !string.IsNullOrEmpty(x.key)).Select(x=>x.key)];
+        return _keys;
     }
 
     
@@ -69,18 +56,17 @@ public sealed class MyHashMap : IHashMap
     {
         int keys_count = Keys().Count();
         int n = entiries.Length;
+        _keys.Add(key);
+        
         if (keys_count < n) {
             int index = Index(key);
             entiries[index] = (key,value);
-            _keys.Add(key);
             return;
         }
 
 
-        // System.Console.WriteLine("got here ... need to re-hash");
         n = entiries.Length*7;
         var table = new (string key, int value)[n];
-        // var keys = Keys();
         for(int i = 0; i < entiries.Length; ++i)
         {
             var (k,v) = entiries[i];
@@ -94,21 +80,17 @@ public sealed class MyHashMap : IHashMap
                     table[idx] = (k, v);
                     break;                
                 }
-                _collisions++;
+                _misses++;
             }
-            // System.Console.Write("keys[{0}]='{1}'",i,keys[i]);
-            // Console.ReadLine();
         }
-        // System.Console.WriteLine("done re-hashing");
+
         entiries = table;
         Put(key,value);
     }
 
-    public int Collisions()=>_collisions;
-
-    public int Get(int index)
+    public long Misses()
     {
-        return entiries[index].value;
+        return _misses;
     }
 
     public int Index(string key)
@@ -118,18 +100,24 @@ public sealed class MyHashMap : IHashMap
         for (int i = 0; i < n; i++)
         {
             int x = (i+index)%n;
-            var (k,_) = entiries[x];
+            var k = entiries[x].key;
             if (string.IsNullOrEmpty(k) || Equals(k,key)) return x;
-            _collisions++;
+            _misses++;
         }
         return index;
     }
 
     public void Increment(string key)
     {
+        if (entiries.Length <= Keys().Count()) Put(key,0);
         int index = Index(key);
-        entiries[index].key = key;
-        entiries[index].value++;
+        entiries[index].key    = key;
+        entiries[index].value += 1;
         _keys.Add(key);
+    }
+
+    public IEnumerable<(string key,int value)> Entries()
+    {
+        return entiries.Where(x=>!string.IsNullOrEmpty(x.key));
     }
 }

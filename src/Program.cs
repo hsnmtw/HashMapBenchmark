@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
 
-Console.WriteLine("Hash Map Implementation from scratch !");
 
 static long Benchmark(string file, IHashMap map)
 {
@@ -37,7 +36,7 @@ static long Benchmark(string file, IHashMap map)
             if ( c == ' ' || c == '\r' || c =='\n' || c =='\t' || c =='\0')
             {
                 if (word.Length == 0) continue;
-                //int index = map.Index(word);
+                //map.Put(word, map.Get(word)+1);
                 map.Increment(word);
                 word = "";
                 continue;
@@ -69,26 +68,39 @@ string[] stories = [
     "houn.txt",
    "t8.shakespeare.txt"
 ];
-
-System.Console.WriteLine("---------------------------------------------------------------------------");
-System.Console.WriteLine("{0,-30} {1,15} {2,15} {3,6}(ms)","Name","Iterations","Collisions","Elapsed");
-System.Console.WriteLine("---------------------------------------------------------------------------");
-
-foreach(var file in stories)
+    
+void RunBenchMark(string name, IHashMap map, int iterations)
 {
-    double sum = 0;
-    double n = 10.0;
-    long collisions=0;
-    for(int i=0;i<n;++i)
-    {
-        var map = new MyHashMap();
-        sum += Benchmark(file, map);
-        collisions+=map.Collisions();
-    }
-    System.Console.WriteLine("{0,-30} {1,15:N0} {2,15:N0} {3,10:N0}", file, n, collisions, sum/n);
 
+    Console.WriteLine("Hash Map [{0}]", name);
+    System.Console.WriteLine("----------------------------------------------------------------------------------------");
+    System.Console.WriteLine("{0,-25} {1,15} {2,15} {3}  {4} (ms)","Name","Words","Most","Misses","Elapsed min/avg/max");
+    System.Console.WriteLine("----------------------------------------------------------------------------------------");
+
+    foreach(var file in stories)
+    {
+        double sum = 0;
+        double min = double.MaxValue;
+        double max = double.MinValue;
+        long misses=0;
+        for(int i=0;i<iterations;++i)
+        {
+            var elapsed = Benchmark(file, map);
+            sum += elapsed;
+            max = max < elapsed ? elapsed : max;
+            min = min > elapsed ? elapsed : min;
+            misses+=map.Misses();
+        }
+        var (v,k) = map.Entries().Select(x => (x.value, x.key)).OrderDescending().FirstOrDefault();
+        System.Console.WriteLine("{0,-20} {1,7:N0}KB {2,9:N0} {3,5:N0} {4,7} {5,8} {6,7:N0} {7,7:N0} {8,7:N0}", file ,new FileInfo(file).Length*1.0d/1000.0, map.Count(), k,v, misses/iterations, min,sum/iterations, max);
+
+    }
+    System.Console.WriteLine("----------------------------------------------------------------------------------------");
 }
-System.Console.WriteLine("---------------------------------------------------------------------------");
+
+RunBenchMark("Native", new DotNetNative(), 1);
+RunBenchMark("OurMap", new MyHashMap(),    1);
+RunBenchMark("Naeive", new NaeiveImpl(),   1);
 
 
 /*
