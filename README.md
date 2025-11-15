@@ -1,13 +1,13 @@
 # HashMapBenchmark
 
-`[c#]
-RunBenchMark("Naeive", new NaeiveImpl(), 3);
-RunBenchMark("Native", new DotNetNative(), 3);
-RunBenchMark("OurMap", new MyHashMap(), 3);
-`
+```[c#]
+RunBenchMark("Naeive", new NaeiveImpl(),   1);
+RunBenchMark("Native", new DotNetNative(), 1);
+RunBenchMark("OurMap", new MyHashMap(),    1);
+```
 
 *the following is the test results:*
-`
+```
 D:\coding\hash_map>dotnet run --release
 Hash Map [Native]
 ----------------------------------------------------------------------------------------
@@ -36,12 +36,12 @@ black-peter.txt           48KB     8,872   the     502  5516372      81      81 
 houn.txt                 346KB    68,124   the    3570 108842592   1,309   1,309   1,309
 t8.shakespeare.txt     5,458KB   969,450   the   26812 9171151790 152,264 152,264 152,264
 ----------------------------------------------------------------------------------------
-`
+```
 
 The hash function used is not proven to give a unique result for any key, yet, it performed
 very well.
 
-`[c#]
+```[c#]
     private static readonly int[] primes = [3,5,7,11,13,19,23,29]; 
     private int Hash(string key)
     {
@@ -56,4 +56,4 @@ very well.
         int hash = (int)sum;
         return hash < 0 ? -hash : hash;
     }
-`
+```
