@@ -12,16 +12,15 @@ Algorithm used:
     function get_index(key) {
         n := items.count
         index := hash(key) MODULO n
-        if index < n then
-            if item[index].key == NULL or item[index].key == key then
-                return index
-            else
-                for i := 0 to n # number of items in the storage
-                    if items[i].key == NULL or item[i].key == key then
-                        return i
-                    end if
-                next
-            end if
+
+        if item[index].key == NULL or item[index].key == key then
+            return index
+        else
+            for i := 0 to n # number of items in the storage
+                if items[i].key == NULL or item[i].key == key then
+                    return i
+                end if
+            next
         end if
 
         # the array is full and needs expansion
