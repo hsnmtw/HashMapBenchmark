@@ -1,11 +1,11 @@
 public sealed class NaeiveImpl : IHashMap
 {
     private int pos;
-    private (string key, int value)[] entiries = new (string key, int value)[4197];
+    private (string key, int value)[] entiries = new (string key, int value)[93];
 
     public void Clear()
     {
-        entiries = new (string key, int value)[4197];
+        entiries = new (string key, int value)[93];
     }
 
     private long _misses;
@@ -51,36 +51,41 @@ public sealed class NaeiveImpl : IHashMap
     public void Put(string key, int value)
     {
         int n = entiries.Length;
+        bool is_empty;
         
         if (n > pos)
         {
             int index = Index(key);
+            is_empty = index>=pos && string.IsNullOrEmpty(entiries[index].key);
             entiries[index] = (key,value);
             //_keys.Add(key);
-            pos++;
+            if(is_empty) pos++;
             return;
         }
 
-        var table = new (string key, int value)[n*7];
+        var table = new (string key, int value)[n*2];
         for (int i = 0; i < n; i++)
         {
             table[i] = entiries[i];
         }
 
+        is_empty = n>=pos && string.IsNullOrEmpty(table[n].key);
+
         table[n] = (key,value);
         entiries = table;
         //_keys.Add(key);
-        pos++;
+        if(is_empty) pos++;
 
     }
 
     public void Increment(string key)
     {
-        if (entiries.Length <= pos) Put(key,0);
+        if (pos >= entiries.Length) Put(key,0);
         int index = Index(key);
+        bool is_empty = index >= pos && string.IsNullOrEmpty(entiries[index].key);
         entiries[index].key    = key;
         entiries[index].value += 1;
         //_keys.Add(key);
-        pos++;
+        if(is_empty) pos++;
     }
 }

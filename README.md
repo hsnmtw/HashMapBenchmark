@@ -57,3 +57,6 @@ very well.
         return hash < 0 ? -hash : hash;
     }
 ```
+
+-- there is a bug in the naeive implementation not getting accurate word count, but who cares
+it was not meant to be accurate, it was added to compare algorithm time roughly
