@@ -17,6 +17,7 @@ public sealed class MyHashMap : IHashMap
             byte c = (byte)key[i];
             int p = primes[i%primes.Length];
             sum =  (sum*p ^ c*(l-i+1)) << 5;
+            // sum += c*p*(l-i+1) << 5;
         }
         int hash = (int)sum;
         return hash < 0 ? -hash : hash;

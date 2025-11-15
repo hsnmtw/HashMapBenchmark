@@ -2,7 +2,7 @@
 using System.Text;
 
 
-static long Benchmark(string file, IHashMap map)
+static long Benchmark(string file, IHashMap map, int iteration, int iterations)
 {
     // System.Console.WriteLine("Benchmarking {0}", file);
     //IHashMap map = new DotNetNative();
@@ -29,7 +29,7 @@ static long Benchmark(string file, IHashMap map)
         sofar += r;
         Console.CursorTop = top;
         Console.CursorLeft = 0;
-        System.Console.Write("[{0}]: {1:P2}", file, sofar/size);
+        System.Console.Write("[{0}/{1}] [{2}]: {3:P2}", iteration, iterations, file, sofar/size);
         for(int i = 0; i < r; ++i)
         {
             char c = (char)chars[i];
@@ -66,13 +66,13 @@ string[] stories = [
     "AbigailsTale.txt",
     "black-peter.txt",
     "houn.txt",
-   "t8.shakespeare.txt"
+    "t8.shakespeare.txt"
 ];
     
 void RunBenchMark(string name, IHashMap map, int iterations)
 {
 
-    Console.WriteLine("Hash Map [{0}]", name);
+    Console.WriteLine("Hash Map [{0}] with # of iterations = {1}", name, iterations);
     System.Console.WriteLine("----------------------------------------------------------------------------------------");
     System.Console.WriteLine("{0,-25} {1,15} {2,15} {3}  {4} (ms)","Name","Words","Most","Misses","Elapsed min/avg/max");
     System.Console.WriteLine("----------------------------------------------------------------------------------------");
@@ -85,7 +85,7 @@ void RunBenchMark(string name, IHashMap map, int iterations)
         long misses=0;
         for(int i=0;i<iterations;++i)
         {
-            var elapsed = Benchmark(file, map);
+            var elapsed = Benchmark(file, map, i+1, iterations);
             sum += elapsed;
             max = max < elapsed ? elapsed : max;
             min = min > elapsed ? elapsed : min;
@@ -98,9 +98,9 @@ void RunBenchMark(string name, IHashMap map, int iterations)
     System.Console.WriteLine("----------------------------------------------------------------------------------------");
 }
 
-RunBenchMark("Native", new DotNetNative(), 1);
-RunBenchMark("OurMap", new MyHashMap(),    1);
-RunBenchMark("Naeive", new NaeiveImpl(),   1);
+RunBenchMark("Native", new DotNetNative(), 5);
+RunBenchMark("OurMap", new MyHashMap(),    5);
+RunBenchMark("Naeive", new NaeiveImpl(),   5);
 
 
 /*
